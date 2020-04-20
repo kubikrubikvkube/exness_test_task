@@ -1,9 +1,12 @@
 package endpoints.ping;
 
 import endpoints.Endpoints;
+import endpoints.utils.AuthorizationHelper;
 import lombok.extern.java.Log;
 import lombok.val;
 import org.testng.annotations.Test;
+
+import java.util.concurrent.TimeUnit;
 
 import static io.restassured.RestAssured.given;
 import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
@@ -39,11 +42,43 @@ public class TestAuthorizeEndpoint {
     }
 
     @Test
+    public void testTokenInvalidation() throws InterruptedException {
+        val token = AuthorizationHelper.getValidToken();
+        val response = given()
+                .log().all()
+                .header("Authorization", "Bearer " + token)
+                .post(Endpoints.SAVE_DATA.url)
+                .then()
+                .log().all()
+                .assertThat()
+                .statusCode(400)
+                .extract();
+
+        String error = response.htmlPath().getString("html.head.title");
+        assertEquals(error, "Error: 400 Bad Request");
+
+        log.info("We've sent bad request, but token is accepted and valid.");
+
+        Thread.sleep(TimeUnit.SECONDS.toMillis(65));
+        given()
+                .log().all()
+                .header("Authorization", "Bearer " + token)
+                .post(Endpoints.SAVE_DATA.url)
+                .then()
+                .log().all()
+                .assertThat()
+                .statusCode(403)
+                .extract();
+
+        log.info("60 seconds passed and this token usage leads to '403 forbidden'");
+    }
+
+    @Test
     void invalidUserNameAndPasswordShouldLeadToError() {
         val response = given()
                 .contentType("multipart/form-data")
-                .multiPart("username", "invalidusername")
-                .multiPart("password", "invalidpassword")
+                .multiPart("username", "NOT_" + VALID_USERNAME)
+                .multiPart("password", "NOT_" + VALID_PASSWORD)
                 .when()
                 .log().all()
                 .post(Endpoints.AUTHORIZE.url)

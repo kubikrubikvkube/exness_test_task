@@ -1,6 +1,7 @@
 package endpoints.ping;
 
 import endpoints.Endpoints;
+import endpoints.utils.AuthorizationHelper;
 import io.restassured.http.ContentType;
 import lombok.extern.java.Log;
 import lombok.val;
@@ -18,18 +19,15 @@ import static org.testng.Assert.assertEquals;
 
 @Log
 public class TestApiSaveDataEndpoint {
-    private final String VALID_USERNAME = "supertest";
-    private final String VALID_PASSWORD = "superpassword";
-
     private String token;
 
     @BeforeMethod
     public void setUp() {
-        token = authorize();
+        token = AuthorizationHelper.getValidToken();
     }
 
     @Test
-    public void shouldGet403IfUnathorized() {
+    public void shouldGet403IfNoAuthorizationTokenProvided() {
         val response = when()
                 .post(Endpoints.SAVE_DATA.url)
                 .then()
@@ -39,8 +37,6 @@ public class TestApiSaveDataEndpoint {
                 .extract();
         String error = response.htmlPath().getString("html.head.title");
         assertEquals(error, "Error: 403 Forbidden");
-
-
     }
 
     @Test
@@ -57,6 +53,7 @@ public class TestApiSaveDataEndpoint {
 
         String error = response.htmlPath().getString("html.head.title");
         assertEquals(error, "Error: 400 Bad Request");
+        log.info("We've sent bad request, but authorization header is accepted");
     }
 
     @Test
@@ -104,19 +101,4 @@ public class TestApiSaveDataEndpoint {
         log.info("Saved entry id is " + responseBody.getInt("id"));
     }
 
-    private String authorize() {
-        return given()
-                .contentType("multipart/form-data")
-                .multiPart("username", VALID_USERNAME)
-                .multiPart("password", VALID_PASSWORD)
-                .when()
-                .log().all()
-                .post(Endpoints.AUTHORIZE.url)
-                .then()
-                .log().all()
-                .extract()
-                .body()
-                .jsonPath()
-                .getString("token");
-    }
 }

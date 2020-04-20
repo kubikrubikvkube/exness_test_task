@@ -8,7 +8,7 @@ import static io.restassured.RestAssured.when;
 import static java.net.HttpURLConnection.HTTP_OK;
 import static org.testng.Assert.assertEquals;
 
-public class TestPingEndpoint extends endpoints.ping.AbstractEndpointTest {
+public class TestPingEndpoint {
 
 
     @Test
