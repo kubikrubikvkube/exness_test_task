@@ -1,10 +1,8 @@
-package endpoints.ping;
-
 import endpoints.Endpoints;
-import endpoints.utils.AuthorizationHelper;
 import lombok.extern.java.Log;
 import lombok.val;
 import org.testng.annotations.Test;
+import utils.AuthorizationHelper;
 
 import java.util.concurrent.TimeUnit;
 

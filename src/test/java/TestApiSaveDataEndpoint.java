@@ -1,12 +1,10 @@
-package endpoints.ping;
-
 import endpoints.Endpoints;
-import endpoints.utils.AuthorizationHelper;
 import io.restassured.http.ContentType;
 import lombok.extern.java.Log;
 import lombok.val;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import utils.AuthorizationHelper;
 
 import java.util.UUID;
 

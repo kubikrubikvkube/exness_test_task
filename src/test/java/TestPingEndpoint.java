@@ -1,5 +1,3 @@
-package endpoints.ping;
-
 import endpoints.Endpoints;
 import lombok.val;
 import org.testng.annotations.Test;

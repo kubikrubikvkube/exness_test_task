@@ -1,4 +1,4 @@
-package endpoints.utils;
+package utils;
 
 import endpoints.Endpoints;
 
